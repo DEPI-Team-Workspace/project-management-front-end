@@ -24,7 +24,7 @@ export const links: Route.LinksFunction = () => [
   },
   {
     rel: "icon",
-    href: "../public/Omega3.ico",
+    href: "../public/cropped_circle_image.png",
   },
 ];
 

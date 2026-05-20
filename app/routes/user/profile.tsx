@@ -77,11 +77,11 @@ const Profile = () => {
   const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: user?.name || "",
+      name: user?.username || "",
       profilePicture: user?.profilePicture || "",
     },
     values: {
-      name: user?.name || "",
+      name: user?.username || "",
       profilePicture: user?.profilePicture || "",
     },
   });
@@ -170,10 +170,10 @@ const Profile = () => {
                       profileForm.watch("profilePicture") ||
                       user?.profilePicture
                     }
-                    alt={user?.name}
+                    alt={user?.username}
                   />
                   <AvatarFallback className="text-xl">
-                    {user?.name?.charAt(0) || "U"}
+                    {user?.username?.charAt(0) || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div>

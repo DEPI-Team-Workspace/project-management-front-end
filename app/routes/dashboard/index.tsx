@@ -17,7 +17,9 @@ import { useSearchParams } from "react-router";
 
 const Dashboard = () => {
   const [searchParams] = useSearchParams();
-  const workspaceId = searchParams.get("workspaceId");
+  const workspaceId =
+    searchParams.get("workspaceId") ||
+    localStorage.getItem("selectedWorkspaceId");
   const { data, isPending } = useGetWorkspaceStatsQuery(workspaceId || "") as {
     data: {
       status: number;
@@ -34,7 +36,7 @@ const Dashboard = () => {
     };
     isPending: boolean;
   };
-  if (isPending||!data) {
+  if (isPending || !data) {
     return (
       <div>
         <Loader />

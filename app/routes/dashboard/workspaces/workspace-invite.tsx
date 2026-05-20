@@ -31,9 +31,16 @@ const WorkspaceInvite = () => {
     return <div>Workspace not found</div>;
   }
 
-  const { data: workspace, isLoading } = useGetWorkspaceDetailsQuery(
-    workspaceId!
-  ) as { data: Workspace; isLoading: boolean };
+  const { data, isLoading } = useGetWorkspaceDetailsQuery(
+  workspaceId!
+) as {
+  data: {
+    data: Workspace;
+  };
+  isLoading: boolean;
+};
+
+const workspace = data?.data;
 
   const {
     mutate: acceptInviteByToken,

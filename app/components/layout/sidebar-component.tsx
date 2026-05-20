@@ -48,12 +48,12 @@ export const SidebarComponent = ({
       icon: Users,
     },
     {
-      title: "Achieved",
+      title: "Achieved (In the near future)",
       href: `/achieved`,
       icon: CheckCircle2,
     },
     {
-      title: "Settings",
+      title: "Settings (In the near future)",
       href: "/settings",
       icon: Settings,
     },
@@ -107,10 +107,11 @@ export const SidebarComponent = ({
         <Button
           variant={"ghost"}
           size={isCollapsed ? "icon" : "default"}
+          className="text-red-500"
           onClick={logout}
         >
           <LogOut className={cn("size-4", isCollapsed && "mr-2")} />
-          <span className="hidden md:block">Logout</span>
+          <span className="hidden md:block text-red-500">Logout</span>
         </Button>
       </div>
     </div>

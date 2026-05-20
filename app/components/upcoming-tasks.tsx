@@ -13,7 +13,9 @@ import { format } from "date-fns";
 
 export const UpcomingTasks = ({ data }: { data: Task[] }) => {
   const [searchParams] = useSearchParams();
-  const workspaceId = searchParams.get("workspaceId");
+  const workspaceId =
+    searchParams.get("workspaceId") ||
+    localStorage.getItem("selectedWorkspaceId");
 
   return (
     <Card>
@@ -39,7 +41,7 @@ export const UpcomingTasks = ({ data }: { data: Task[] }) => {
                   "mt-0.5 rounded-full p-1",
                   task.priority === "High" && "bg-red-100 text-red-700",
                   task.priority === "Medium" && "bg-yellow-100 text-yellow-700",
-                  task.priority === "Low" && "bg-gray-100 text-gray-700"
+                  task.priority === "Low" && "bg-gray-100 text-gray-700",
                 )}
               >
                 {task.status === "Done" ? (

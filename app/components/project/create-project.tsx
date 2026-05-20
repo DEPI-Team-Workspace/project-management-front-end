@@ -86,7 +86,7 @@ export const CreateProjectDialog = ({
           toast.error(errorMessage);
           console.log(error);
         },
-      }
+      },
     );
   };
 
@@ -282,10 +282,10 @@ export const CreateProjectDialog = ({
                             ) : selectedMembers.length <= 2 ? (
                               selectedMembers.map((m) => {
                                 const member = workspaceMembers.find(
-                                  (wm) => wm.user._id === m.user
+                                  (wm) => wm.user._id === m.user,
                                 );
 
-                                return `${member?.user.name} (${member?.role})`;
+                                return `${member?.user.username} (${member?.role})`;
                               })
                             ) : (
                               `${selectedMembers.length} members selected`
@@ -299,7 +299,7 @@ export const CreateProjectDialog = ({
                           <div className="flex flex-col gap-2">
                             {workspaceMembers.map((member) => {
                               const selectedMember = selectedMembers.find(
-                                (m) => m.user === member.user._id
+                                (m) => m.user === member.user._id,
                               );
 
                               return (
@@ -321,15 +321,15 @@ export const CreateProjectDialog = ({
                                       } else {
                                         field.onChange(
                                           selectedMembers.filter(
-                                            (m) => m.user !== member.user._id
-                                          )
+                                            (m) => m.user !== member.user._id,
+                                          ),
                                         );
                                       }
                                     }}
                                     id={`member-${member.user._id}`}
                                   />
                                   <span className="truncate flex-1">
-                                    {member.user.name}
+                                    {member.user.username}
                                   </span>
 
                                   {selectedMember && (
@@ -346,8 +346,8 @@ export const CreateProjectDialog = ({
                                                     | "manager"
                                                     | "viewer",
                                                 }
-                                              : m
-                                          )
+                                              : m,
+                                          ),
                                         );
                                       }}
                                     >

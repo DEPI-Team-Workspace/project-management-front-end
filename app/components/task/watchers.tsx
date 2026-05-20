@@ -12,10 +12,10 @@ export const Watchers = ({ watchers }: { watchers: User[] }) => {
             <div key={watcher._id} className="flex items-center gap-2">
               <Avatar className="size-6">
                 <AvatarImage src={watcher.profilePicture} />
-                <AvatarFallback>{watcher.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback>{watcher.username.charAt(0)}</AvatarFallback>
               </Avatar>
 
-              <p className="text-sm text-muted-foreground">{watcher.name}</p>
+              <p className="text-sm text-muted-foreground">{watcher.username}</p>
             </div>
           ))
         ) : (

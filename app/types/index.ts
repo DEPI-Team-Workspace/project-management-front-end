@@ -1,7 +1,7 @@
 export interface User {
   _id: string;
   email: string;
-  name: string;
+  username: string;
   createdAt: Date;
   isEmailVerified: boolean;
   updatedAt: Date;
@@ -18,6 +18,7 @@ export interface Workspace {
     user: User;
     role: "admin" | "member" | "owner" | "viewer";
     joinedAt: Date;
+    _id: string;
   }[];
   createdAt: Date;
   updatedAt: Date;
@@ -46,7 +47,7 @@ export interface Project {
   }[];
   createdAt: Date;
   updatedAt: Date;
-  isArchived: boolean;
+  isAchieved: boolean;
 }
 export type TaskStatus = "To Do" | "In Progress" | "Done";
 export type TaskPriority = "High" | "Medium" | "Low";
@@ -71,7 +72,7 @@ export interface Task {
   project: Project;
   createdAt: Date;
   updatedAt: Date;
-  isArchived: boolean;
+  isAchieved: boolean;
   dueDate: Date;
   priority: TaskPriority;
   assignee: User | string;

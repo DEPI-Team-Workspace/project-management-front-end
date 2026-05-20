@@ -1,7 +1,6 @@
 import { Loader } from "@/components/loader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,28 +8,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGetMyTasksQuery } from "@/hooks/use-task";
 import { useGetWorkspaceDetailsQuery } from "@/hooks/use-workspace";
-import type { Task, Workspace } from "@/types";
-import { format } from "date-fns";
-import { ArrowUpRight, CheckCircle, Clock, FilterIcon } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import type { Workspace } from "@/types";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
 
 const Members = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const workspaceId = searchParams.get("workspaceId");
+  const workspaceId =
+    searchParams.get("workspaceId") ||
+    localStorage.getItem("selectedWorkspaceId");
   const initialSearch = searchParams.get("search") || "";
   const [search, setSearch] = useState<string>(initialSearch);
 
@@ -48,30 +38,42 @@ const Members = () => {
 
   useEffect(() => {
     const urlSearch = searchParams.get("search") || "";
-    if (urlSearch !== search) setSearch(urlSearch);
+
+    if (urlSearch !== search) {
+      setSearch(urlSearch);
+    }
   }, [searchParams]);
 
   const { data, isLoading } = useGetWorkspaceDetailsQuery(workspaceId!) as {
-    data: Workspace;
+    data: {
+      status: number;
+      message: string;
+      data: Workspace;
+    };
     isLoading: boolean;
   };
 
-  if (isLoading)
+  const workspace = data?.data;
+
+  if (isLoading) {
     return (
       <div>
         <Loader />
       </div>
     );
+  }
 
-  if (!data || !workspaceId) return <div>No workspace found</div>;
+  if (!workspace || !workspaceId) {
+    return <div>No workspace found</div>;
+  }
 
-  const filteredMembers = data?.members?.filter(
-    (member) =>
-      member.user.name.toLowerCase().includes(search.toLowerCase()) ||
-      member.user.email.toLowerCase().includes(search.toLowerCase()) ||
-      member.role?.toLowerCase().includes(search.toLowerCase())
-  );
-
+  const filteredMembers =
+    workspace.members?.filter(
+      (member) =>
+        member.user?.username?.toLowerCase().includes(search.toLowerCase()) ||
+        member.user?.email?.toLowerCase().includes(search.toLowerCase()) ||
+        member.role?.toLowerCase().includes(search.toLowerCase()),
+    ) || [];
   return (
     <div className="space-y-6">
       <div className="flex items-start md:items-center justify-between">
@@ -96,8 +98,9 @@ const Members = () => {
           <Card>
             <CardHeader>
               <CardTitle>Members</CardTitle>
+
               <CardDescription>
-                {filteredMembers?.length} members in your workspace
+                {filteredMembers.length} members in your workspace
               </CardDescription>
             </CardHeader>
 
@@ -105,20 +108,25 @@ const Members = () => {
               <div className="divide-y">
                 {filteredMembers.map((member) => (
                   <div
-                    key={member.user._id}
+                    key={member.user?._id || member._id}
                     className="flex flex-col md:flex-row items-center justify-between p-4 gap-3"
                   >
                     <div className="flex items-center space-x-4">
                       <Avatar className="bg-gray-500">
-                        <AvatarImage src={member.user.profilePicture} />
+                        <AvatarImage src={member.user?.profilePicture} />
+
                         <AvatarFallback>
-                          {member.user.name.charAt(0)}
+                          {member.user?.username?.charAt(0) || "U"}
                         </AvatarFallback>
                       </Avatar>
+
                       <div>
-                        <p className="font-medium">{member.user.name}</p>
+                        <p className="font-medium">
+                          {member.user?.username || "Unknown User"}
+                        </p>
+
                         <p className="text-sm text-gray-500">
-                          {member.user.email}
+                          {member.user?.email || "No Email"}
                         </p>
                       </div>
                     </div>
@@ -135,7 +143,7 @@ const Members = () => {
                         {member.role}
                       </Badge>
 
-                      <Badge variant={"outline"}>{data.name}</Badge>
+                      <Badge variant={"outline"}>{workspace.name}</Badge>
                     </div>
                   </div>
                 ))}
@@ -148,21 +156,22 @@ const Members = () => {
         <TabsContent value="board">
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredMembers.map((member) => (
-              <Card key={member.user._id} className="">
+              <Card key={member.user?._id || member._id}>
                 <CardContent className="p-6 flex flex-col items-center text-center">
                   <Avatar className="bg-gray-500 size-20 mb-4">
-                    <AvatarImage src={member.user.profilePicture} />
+                    <AvatarImage src={member.user?.profilePicture} />
+
                     <AvatarFallback className="uppercase">
-                      {member.user.name.substring(0, 2)}
+                      {member.user?.username?.substring(0, 2) || "U"}
                     </AvatarFallback>
                   </Avatar>
 
                   <h3 className="text-lg font-medium mb-2">
-                    {member.user.name}
+                    {member.user?.username || "Unknown User"}
                   </h3>
 
                   <p className="text-sm text-gray-500 mb-4">
-                    {member.user.email}
+                    {member.user?.email || "No Email"}
                   </p>
 
                   <Badge

@@ -64,13 +64,13 @@ export const WorkspaceHeader = ({
               <Avatar
                 key={member._id}
                 className="relative h-8 w-8 rounded-full  border-2 border-background overflow-hidden"
-                title={member.user?.name || "User"}
+                title={member.user?.username || "User"}
               >
                 <AvatarImage
                   src={member.user.profilePicture}
-                  alt={member.user?.name || "User"}
+                  alt={member.user?.username || "User"}
                 />
-                <AvatarFallback>{member.user?.name?.charAt(0) || "U"}</AvatarFallback>
+                <AvatarFallback>{member.user?.username?.charAt(0) || "U"}</AvatarFallback>
               </Avatar>
             ))}
           </div>

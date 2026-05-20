@@ -18,28 +18,33 @@ import {
 } from "@/hooks/use-task";
 import { useAuth } from "@/provider/auth-context";
 import type { Project, Task } from "@/types";
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 
 const TaskDetails = () => {
   const { user } = useAuth();
-  const { taskId, projectId, workspaceId } = useParams<{
+
+  const { taskId } = useParams<{
     taskId: string;
-    projectId: string;
-    workspaceId: string;
   }>();
+
   const navigate = useNavigate();
 
   const { data, isLoading } = useTaskByIdQuery(taskId!) as {
     data: {
-      task: Task;
-      project: Project;
+      status: number;
+      message: string;
+      data: {
+        task: Task;
+        project: Project;
+      };
     };
     isLoading: boolean;
   };
   const { mutate: watchTask, isPending: isWatching } = useWatchTaskMutation();
+
   const { mutate: achievedTask, isPending: isAchieved } =
     useAchievedTaskMutation();
 
@@ -51,7 +56,7 @@ const TaskDetails = () => {
     );
   }
 
-  if (!data) {
+  if (!data?.data?.task) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-2xl font-bold">Task not found</div>
@@ -59,26 +64,27 @@ const TaskDetails = () => {
     );
   }
 
-  const { task, project } = data;
-  const isUserWatching = task?.watchers?.some(
-    (watcher) => watcher._id.toString() === user?._id.toString()
-  );
+  const { task, project } = data.data;
 
-  const goBack = () => navigate(-1);
-
-  const members = task?.assignees || [];
+  const isUserWatching =
+    task?.watchers?.some(
+      (watcher: any) => watcher?._id?.toString() === user?._id?.toString(),
+    ) || false;
 
   const handleWatchTask = () => {
     watchTask(
       { taskId: task._id },
       {
         onSuccess: () => {
-          toast.success("Task watched");
+          toast.success(
+            isUserWatching ? "Stopped watching task" : "Watching task",
+          );
         },
+
         onError: () => {
           toast.error("Failed to watch task");
         },
-      }
+      },
     );
   };
 
@@ -87,28 +93,25 @@ const TaskDetails = () => {
       { taskId: task._id },
       {
         onSuccess: () => {
-          toast.success("Task achieved");
+          toast.success("Task updated");
         },
+
         onError: () => {
-          toast.error("Failed to achieve task");
+          toast.error("Failed to update task");
         },
-      }
+      },
     );
   };
 
   return (
     <div className="container mx-auto p-0 py-4 md:px-4">
       <div className="flex flex-col md:flex-row items-center justify-between mb-6">
-        <div className="flex flex-col md:flex-row md:items-center">
+        <div className="flex flex-col md:flex-row md:items-center gap-2">
           <BackButton />
 
           <h1 className="text-xl md:text-2xl font-bold">{task.title}</h1>
 
-          {task.isArchived && (
-            <Badge className="ml-2" variant={"outline"}>
-              Archived
-            </Badge>
-          )}
+          {task.isAchieved && <Badge variant={"outline"}>Archived</Badge>}
         </div>
 
         <div className="flex space-x-2 mt-4 md:mt-0">
@@ -139,12 +142,13 @@ const TaskDetails = () => {
             className="w-fit"
             disabled={isAchieved}
           >
-            {task.isArchived ? "Unarchive" : "Archive"}
+            {task.isAchieved ? "Mark Unachieved" : "Mark Achieved"}
           </Button>
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* LEFT SIDE */}
         <div className="lg:col-span-2">
           <div className="bg-card rounded-lg p-6 shadow-sm mb-6">
             <div className="flex flex-col md:flex-row justify-between items-start mb-4">
@@ -164,30 +168,24 @@ const TaskDetails = () => {
 
                 <TaskTitle title={task.title} taskId={task._id} />
 
-                <div className="text-sm md:text-base text-muted-foreground">
-                  Created at:{" "}
-                  {formatDistanceToNow(new Date(task.createdAt), {
-                    addSuffix: true,
-                  })}
+                <div className="text-sm text-muted-foreground mt-2">
+                  Created{" "}
+                  {task.createdAt
+                    ? formatDistanceToNow(new Date(task.createdAt), {
+                        addSuffix: true,
+                      })
+                    : ""}
                 </div>
               </div>
 
               <div className="flex items-center gap-2 mt-4 md:mt-0">
                 <TaskStatusSelector status={task.status} taskId={task._id} />
-
-                <Button
-                  variant={"destructive"}
-                  size="sm"
-                  onClick={() => {}}
-                  className="hidden md:block"
-                >
-                  Delete Task
-                </Button>
               </div>
             </div>
 
+            {/* DESCRIPTION */}
             <div className="mb-6">
-              <h3 className="text-sm font-medium text-muted-foreground mb-0">
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">
                 Description
               </h3>
 
@@ -197,22 +195,33 @@ const TaskDetails = () => {
               />
             </div>
 
-            <TaskAssigneesSelector
-              task={task}
-              assignees={task.assignees}
-              projectMembers={project.members as any}
-            />
+            {/* ASSIGNEES */}
+            <div className="mb-6">
+              <TaskAssigneesSelector
+                task={task}
+                assignees={task.assignees || []}
+                projectMembers={project.members || []}
+              />
+            </div>
 
-            <TaskPrioritySelector priority={task.priority} taskId={task._id} />
+            {/* PRIORITY */}
+            <div className="mb-6">
+              <TaskPrioritySelector
+                priority={task.priority}
+                taskId={task._id}
+              />
+            </div>
 
+            {/* SUBTASKS */}
             <SubTasksDetails subTasks={task.subtasks || []} taskId={task._id} />
           </div>
 
-          <CommentSection taskId={task._id} members={project.members as any} />
+          {/* COMMENTS */}
+          <CommentSection taskId={task._id} members={project.members || []} />
         </div>
 
-        {/* right side */}
-        <div className="w-full">
+        {/* RIGHT SIDE */}
+        <div className="space-y-6">
           <Watchers watchers={task.watchers || []} />
 
           <TaskActivity resourceId={task._id} />

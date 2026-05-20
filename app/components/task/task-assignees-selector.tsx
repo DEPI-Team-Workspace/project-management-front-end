@@ -84,10 +84,10 @@ export const TaskAssigneesSelector = ({
               >
                 <Avatar className="size-6 mr-1">
                   <AvatarImage src={m.user.profilePicture} />
-                  <AvatarFallback>{m.user.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback>{m.user.username.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <span className="text-xs text-muted-foreground">
-                  {m.user.name}
+                  {m.user.username}
                 </span>
               </div>
             ))
@@ -135,10 +135,10 @@ export const TaskAssigneesSelector = ({
 
                 <Avatar className="size-6 mr-2">
                   <AvatarImage src={m.user.profilePicture} />
-                  <AvatarFallback>{m.user.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback>{m.user.username.charAt(0)}</AvatarFallback>
                 </Avatar>
 
-                <span>{m.user.name}</span>
+                <span>{m.user.username}</span>
               </label>
             ))}
 

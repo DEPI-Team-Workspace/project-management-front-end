@@ -60,13 +60,13 @@ export const CreateWorkspace = ({
   const { mutate, isPending } = useCreateWorkspace();
 
   const onSubmit = (data: WorkspaceForm) => {
-    console.log(data);
     mutate(data, {
-      onSuccess: (data: any) => {
+      onSuccess: (response: any) => {
         form.reset();
         setIsCreatingWorkspace(false);
         toast.success("Workspace created successfully");
-        navigate(`/workspace/${data._id}`);
+        const workspace = response.data[0];
+        navigate(`/workspaces/${workspace._id}`);
       },
       onError: (error: any) => {
         const errorMessage = error.response.data.message;
@@ -135,7 +135,7 @@ export const CreateWorkspace = ({
                             className={cn(
                               "w-6 h-6 rounded-full cursor-pointer hover:opacity-80 transition-all duration-300",
                               field.value === color &&
-                                "ring-2 ring-offset-2 ring-blue-500"
+                                "ring-2 ring-offset-2 ring-blue-500",
                             )}
                             style={{ backgroundColor: color }}
                           ></div>

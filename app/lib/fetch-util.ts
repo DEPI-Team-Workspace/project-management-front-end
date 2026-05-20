@@ -52,4 +52,14 @@ const deleteData = async <T>(url: string): Promise<T> => {
   return response.data;
 };
 
-export { postData, fetchData, updateData, deleteData };
+const patchData = async <T>(
+  url: string,
+  data: unknown
+): Promise<T> => {
+  const response = await api.patch(url, data);
+
+  return response.data;
+};
+
+
+export { postData, fetchData, updateData, deleteData , patchData};

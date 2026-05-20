@@ -34,7 +34,7 @@ const MyTasks = () => {
 
   const [filter, setFilter] = useState<string>(initialFilter);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">(
-    initialSort === "asc" ? "asc" : "desc"
+    initialSort === "asc" ? "asc" : "desc",
   );
   const [search, setSearch] = useState<string>(initialSearch);
 
@@ -76,7 +76,7 @@ const MyTasks = () => {
             if (filter === "todo") return task.status === "To Do";
             if (filter === "inprogress") return task.status === "In Progress";
             if (filter === "done") return task.status === "Done";
-            if (filter === "achieved") return task.isArchived === true;
+            if (filter === "achieved") return task.isAchieved === true;
             if (filter === "high") return task.priority === "High";
 
             return true;
@@ -84,7 +84,7 @@ const MyTasks = () => {
           .filter(
             (task) =>
               task.title.toLowerCase().includes(search.toLowerCase()) ||
-              task.description?.toLowerCase().includes(search.toLowerCase())
+              task.description?.toLowerCase().includes(search.toLowerCase()),
           )
       : [];
 
@@ -100,7 +100,7 @@ const MyTasks = () => {
 
   const todoTasks = sortedTasks.filter((task) => task.status === "To Do");
   const inProgressTasks = sortedTasks.filter(
-    (task) => task.status === "In Progress"
+    (task) => task.status === "In Progress",
   );
   const doneTasks = sortedTasks.filter((task) => task.status === "Done");
 
@@ -228,7 +228,7 @@ const MyTasks = () => {
                               </Badge>
                             )}
 
-                            {task.isArchived && (
+                            {task.isAchieved && (
                               <Badge variant={"outline"}>Archived</Badge>
                             )}
                           </div>

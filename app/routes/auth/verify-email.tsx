@@ -1,88 +1,126 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import React, { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router";
-import { ArrowLeft, CheckCircle, Loader, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useVerifyEmailMutation } from "@/hooks/use-auth";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  useVerifyEmailMutation,
+  useResendVerifyEmailMutation,
+} from "@/hooks/use-auth";
+import { useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
 
-  const token = searchParams.get("token");
-  const [isSuccess, setIsSuccess] = useState(false);
-  const { mutate, isPending: isVerifying } = useVerifyEmailMutation();
+  const email = searchParams.get("email");
 
-  useEffect(() => {
-    if (token) {
-      mutate(
-        { token },
-        {
-          onSuccess: () => {
-            setIsSuccess(true);
-          },
-          onError: (error: any) => {
-            const errorMessage =
-              error.response?.data?.message || "An error occurred";
-            setIsSuccess(false);
-            console.log(error);
+  const navigate = useNavigate();
 
-            toast.error(errorMessage);
-          },
-        }
-      );
+  const [otp, setOtp] = useState("");
+
+  const { mutate, isPending } = useVerifyEmailMutation();
+
+  const {
+    mutate: resendOtp,
+    isPending: isResending,
+  } = useResendVerifyEmailMutation();
+
+  const handleVerify = () => {
+    if (!email) {
+      toast.error("Email not found");
+      return;
     }
-  }, [searchParams]);
+
+    mutate(
+      {
+        email,
+        otp,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Email verified successfully");
+
+          navigate("/sign-in");
+        },
+
+        onError: (error: any) => {
+          toast.error(
+            error.response?.data?.message || "Verification failed"
+          );
+        },
+      }
+    );
+  };
+
+  const handleResendOtp = () => {
+    if (!email) return;
+
+    resendOtp(
+      { email },
+      {
+        onSuccess: () => {
+          toast.success("OTP sent successfully");
+        },
+
+        onError: (error: any) => {
+          toast.error(
+            error.response?.data?.message || "Failed to resend OTP"
+          );
+        },
+      }
+    );
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-2xl font-bold">Verify Email</h1>
-      <p className="text-sm text-gray-500">Verifying your email...</p>
+    <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
+      <Card className="w-full max-w-md shadow-xl">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">
+            Verify your email
+          </CardTitle>
 
-      <Card className="w-full max-w-md">
-        {/* <CardHeader>
-          <Link to="/sign-in" className="flex items-center gap-2 text-sm">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Sign in
-          </Link>
-        </CardHeader> */}
+          <CardDescription>
+            Enter the OTP sent to your email
+          </CardDescription>
+        </CardHeader>
 
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-6 ">
-            {isVerifying ? (
-              <>
-                <Loader className="w-10 h-10 text-gray-500 animate-spin" />
-                <h3 className="text-lg font-semibold">Verifying email...</h3>
-                <p className="text-sm text-gray-500">
-                  Please wait while we verify your email.
-                </p>
-              </>
-            ) : isSuccess ? (
-              <>
-                <CheckCircle className="w-10 h-10 text-green-500" />
-                <h3 className="text-lg font-semibold">Email Verified</h3>
-                <p className="text-sm text-gray-500">
-                  Your email has been verified successfully.
-                </p>
-                <Link to="/sign-in" className="text-sm text-blue-500 mt-6">
-                  <Button variant="outline">Back to Sign in</Button>
-                </Link>
-              </>
-            ) : (
-              <>
-                <XCircle className="w-10 h-10 text-red-500" />
-                <h3 className="text-lg font-semibold">
-                  Email Verification Failed
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Your email verification failed. Please try again.
-                </p>
+        <CardContent className="space-y-4">
+          <Input
+            placeholder="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
 
-                <Link to="/sign-in" className="text-sm text-blue-500 mt-6">
-                  <Button variant="outline">Back to Sign in</Button>
-                </Link>
-              </>
-            )}
+          <Button
+            className="w-full"
+            onClick={handleVerify}
+            disabled={isPending}
+          >
+            {isPending ? "Verifying..." : "Verify Email"}
+          </Button>
+
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={handleResendOtp}
+            disabled={isResending}
+          >
+            {isResending ? "Sending..." : "Resend OTP"}
+          </Button>
+
+          <div className="text-center">
+            <Link
+              to="/sign-in"
+              className="text-sm text-blue-500"
+            >
+              Back to Sign in
+            </Link>
           </div>
         </CardContent>
       </Card>

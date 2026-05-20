@@ -33,8 +33,9 @@ const SignUp = () => {
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: "",
+      username: "",
+      phone: "",
       password: "",
-      name: "",
       confirmPassword: "",
     },
   });
@@ -43,14 +44,10 @@ const SignUp = () => {
 
   const handleOnSubmit = (values: SignupFormData) => {
     mutate(values, {
-      onSuccess: () => {
-        toast.success("Email Verification Required", {
-          description:
-            "Please check your email for a verification link. If you don't see it, please check your spam folder.",
-        });
+      onSuccess: (_, variables) => {
+        toast.success("OTP sent to your email");
 
-        form.reset();
-        navigate("/sign-in");
+        navigate(`/verify-email?email=${variables.email}`);
       },
       onError: (error: any) => {
         const errorMessage =
@@ -97,13 +94,29 @@ const SignUp = () => {
               />
               <FormField
                 control={form.control}
-                name="name"
+                name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="John Doe" {...field} />
+                      <Input type="text" placeholder="Omar Khaled" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+
+                    <FormControl>
+                      <Input type="text" placeholder="01000000000" {...field} />
+                    </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}

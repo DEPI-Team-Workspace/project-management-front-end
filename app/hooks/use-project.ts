@@ -14,9 +14,14 @@ export const UseCreateProject = () => {
         `/project/${data.workspaceId}/create-project`,
         data.projectData
       ),
-    onSuccess: (data: any) => {
+
+    onSuccess: (_response, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["workspace", data.workspace],
+        queryKey: ["workspace", variables.workspaceId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["workspace", variables.workspaceId, "stats"],
       });
     },
   });
@@ -26,5 +31,6 @@ export const UseProjectQuery = (projectId: string) => {
   return useQuery({
     queryKey: ["project", projectId],
     queryFn: () => fetchData(`/project/${projectId}/tasks`),
+    enabled: !!projectId,
   });
 };

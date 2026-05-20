@@ -82,10 +82,9 @@ export const CreateTaskDialog = ({
           toast.error(errorMessage);
           console.log(error);
         },
-      }
+      },
     );
   };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -226,7 +225,7 @@ export const CreateTaskDialog = ({
                               }
                               onSelect={(date) => {
                                 field.onChange(
-                                  date?.toISOString() || undefined
+                                  date?.toISOString() || undefined,
                                 );
                               }}
                             />
@@ -262,9 +261,9 @@ export const CreateTaskDialog = ({
                                   selectedMembers
                                     .map((m) => {
                                       const member = projectMembers.find(
-                                        (wm) => wm.user._id === m
+                                        (wm) => wm.user._id === m,
                                       );
-                                      return `${member?.user.name}`;
+                                      return `${member?.user.username}`;
                                     })
                                     .join(", ")
                                 ) : (
@@ -280,7 +279,7 @@ export const CreateTaskDialog = ({
                               <div className="flex flex-col gap-2">
                                 {projectMembers.map((member) => {
                                   const selectedMember = selectedMembers.find(
-                                    (m) => m === member.user?._id
+                                    (m) => m === member.user?._id,
                                   );
                                   return (
                                     <div
@@ -299,15 +298,16 @@ export const CreateTaskDialog = ({
                                           } else {
                                             field.onChange(
                                               selectedMembers.filter(
-                                                (m) => m !== member.user._id
-                                              )
+                                                (m) => m !== member.user._id,
+                                              ),
                                             );
                                           }
                                         }}
                                         id={`member-${member.user._id}`}
                                       />
                                       <span className="truncate flex-1">
-                                        {member.user.name}
+                                        
+                                        {member.user.username}
                                       </span>
                                     </div>
                                   );

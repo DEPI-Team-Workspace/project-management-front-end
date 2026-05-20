@@ -9,14 +9,20 @@ export const signInSchema = z.object({
 export const signUpSchema = z
   .object({
     email: z.string().email("Invalid email address"),
+    username: z
+      .string()
+      .min(3, "Username must be at least 3 characters"),
+    phone: z.string().min(11, "Phone number is required"),
     password: z.string().min(8, "Password must be 8 characters"),
-    name: z.string().min(3, "Name must be at least 3 characters"),
-    confirmPassword: z.string().min(8, "Password must be 8 characters"),
+    confirmPassword: z
+      .string()
+      .min(8, "Password must be 8 characters"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],
     message: "Passwords do not match",
   });
+
 
 export const resetPasswordSchema = z
   .object({
@@ -49,7 +55,7 @@ export const projectSchema = z.object({
       z.object({
         user: z.string(),
         role: z.enum(["manager", "contributor", "viewer"]),
-      })
+      }),
     )
     .optional(),
   tags: z.string().optional(),

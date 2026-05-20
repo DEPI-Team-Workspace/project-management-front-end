@@ -21,8 +21,6 @@ const WorkspaceDetails = () => {
     data: { data: { workspace: Workspace; projects: Project[] } };
     isLoading: boolean;
   };
-  console.log(data);
-
   if (isLoading) {
     return (
       <div>
